@@ -1,8 +1,8 @@
 import csv
-import requests
 import argparse
 import os
 import grequests
+import tqdm
 
 def download_images_from_csv(file_path, save_path):
     # Open the CSV file
@@ -24,9 +24,8 @@ def download_images_from_csv(file_path, save_path):
 
         # using map
         rs = (grequests.get(url) for url in urls)
-        responses = grequests.map(rs)
         
-        for i, response in enumerate(responses):
+        for i, response in tqdm(grequests.imap_enumerated(rs, size=20)):
             # if status code is not 200, skip
             if response.status_code != 200:
                 print(f"Failed to download image {image_ids[i]}")
