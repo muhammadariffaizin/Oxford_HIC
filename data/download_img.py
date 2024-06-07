@@ -29,7 +29,6 @@ def download_images(batch, save_path):
         image_path = os.path.join(save_path, f'{image_id}.jpg')
         with open(image_path, 'wb') as image_file:
             image_file.write(response.content)
-        print(f"Downloaded image {image_id} to {image_path}")
 
 def download_images_from_csv(file_path, save_path, batch_size):
     # Open the CSV file
