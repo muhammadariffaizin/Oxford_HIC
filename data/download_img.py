@@ -22,16 +22,20 @@ def download_images_from_csv(file_path, save_path):
             urls.append(image_url)
             image_ids.append(image_id)
 
-        # using imap enumerated
-        rs = [grequests.get(u) for u in urls]
-        for i, response in grequests.imap_enumerated(rs, size=15):
+        # using map
+        rs = (grequests.get(url) for url in urls)
+        responses = grequests.map(rs)
+        
+        for i, response in enumerate(responses):
+            # if status code is not 200, skip
+            if response.status_code != 200:
+                print(f"Failed to download image {image_ids[i]}")
+                continue
             image_id = image_ids[i]
-            print(image_id)
-            if response.status_code == 200:
-                with open(f"{save_path}/{image_id}.jpg", "wb") as img_file:
-                    img_file.write(response.content)
-            else:
-                print(f"Failed to download image from {urls[i]}")
+            image_path = os.path.join(save_path, f'{image_id}.jpg')
+            with open(image_path, 'wb') as image_file:
+                image_file.write(response.content)
+            print(f"Downloaded image {image_id} to {image_path}")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Download images from CSV file')
