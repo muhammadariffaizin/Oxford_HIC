@@ -2,28 +2,36 @@ import csv
 import requests
 import argparse
 import os
+import grequests
 
 def download_images_from_csv(file_path, save_path):
     # Open the CSV file
     with open(file_path, 'r') as csv_file:
         reader = csv.DictReader(csv_file)
         
-        # For each row in the CSV
+        # Skip the header
+        next(reader)
+
+        # using grequests to download images in parallel
+        urls = []
+        image_ids = []
+
         for row in reader:
             image_id = row['image_id']
             image_url = row['image_url']
-            
-            # Download the image
-            try:
-                response = requests.get(image_url)
-           
-                if response.status_code == 200:
-                    with open(f"{save_path}/{image_id}.jpg", "wb") as img_file:
-                        img_file.write(response.content)
-                else:
-                    print(f"Failed to download image from {image_url}")
-            except:
-                print(f"Failed to download image from {image_url}")
+            urls.append(image_url)
+            image_ids.append(image_id)
+
+        # using imap enumerated
+        rs = [grequests.get(u) for u in urls]
+        for i, response in grequests.imap_enumerated(rs, size=15):
+            image_id = image_ids[i]
+            print(image_id)
+            if response.status_code == 200:
+                with open(f"{save_path}/{image_id}.jpg", "wb") as img_file:
+                    img_file.write(response.content)
+            else:
+                print(f"Failed to download image from {urls[i]}")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Download images from CSV file')
