@@ -2,7 +2,7 @@ import csv
 import argparse
 import os
 import grequests
-import tqdm
+from tqdm import tqdm
 
 def download_images(batch, save_path):
     urls = []
