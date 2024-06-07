@@ -18,6 +18,9 @@ def download_images(batch, save_path):
     rs = (grequests.get(url) for url in urls)
     
     for i, response in tqdm(grequests.imap_enumerated(rs, size=20)):
+        if response is None:
+            print(f"Failed to download image {image_ids[i]}")
+            continue
         # if status code is not 200, skip
         if response.status_code != 200:
             print(f"Failed to download image {image_ids[i]}")
