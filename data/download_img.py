@@ -30,7 +30,7 @@ def download_images(batch, save_path, num_workers=8):
         with open(image_path, 'wb') as image_file:
             image_file.write(response.content)
 
-def download_images_from_csv(file_path, save_path, batch_size=1000, num_workers=8):
+def download_images_from_csv(file_path, save_path, batch_size=1000, num_workers=8, save_zip=False):
     # Open the CSV file
     with open(file_path, 'r') as csv_file:
         reader = csv.DictReader(csv_file)
@@ -51,12 +51,19 @@ def download_images_from_csv(file_path, save_path, batch_size=1000, num_workers=
 
             download_images(batch, save_path, num_workers)
 
+            # save zip per batch
+            if save_zip:
+                os.system(f"zip -r {save_path}.zip {save_path}")
+
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Download images from CSV file')
     parser.add_argument('--file_path', type=str, default='./hic_data/oxford_hic_image_info.csv')
     parser.add_argument('--save_path', type=str, default='./hic_data/images')
     parser.add_argument('--batch_size', type=int, default=10000)
     parser.add_argument('--num_workers', type=int, default=8)
+    parser.add_argument('--save_zip', action='store_true')
     args = parser.parse_args()
     return args
 
@@ -67,7 +74,7 @@ def main():
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path)
         
-    download_images_from_csv(args.file_path, args.save_path, args.batch_size, args.num_workers)
+    download_images_from_csv(args.file_path, args.save_path, args.batch_size, args.num_workers, args.save_zip)
 
 
 if __name__ == '__main__':
