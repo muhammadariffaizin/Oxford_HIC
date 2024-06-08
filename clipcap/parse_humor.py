@@ -13,6 +13,7 @@ import pandas as pd
 def main(args):
     clip_model_type = args.clip_model_type
     data_path = args.data_path
+    data_loader_path = args.data_loader_path
     output_dir = args.output_dir
 
     if args.use_cuda:
@@ -23,13 +24,13 @@ def main(args):
     clip_model_name = clip_model_type.replace('/', '_')
     out_path = f"{output_dir}/humor_{clip_model_name}_single_demo.pkl"
     clip_model, preprocess = clip.load(clip_model_type, device=device, jit=False)
-    data = pd.read_csv(data_path)
+    data = pd.read_csv(data_loader_path)
     print("%0d captions loaded from csv " % len(data))
     all_embeddings = []
     all_captions = []
     for i in tqdm(range(len(data))):
         img_id = data.loc[i, "image_id"]
-        filename = f"../images/{img_id}.jpg"
+        filename = f"{data_path}/{img_id}.jpg"
         try:
             image = io.imread(filename)
         except:
@@ -61,6 +62,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--clip_model_type', default="ViT-B/32", choices=('RN50', 'RN101', 'RN50x4', 'ViT-B/32'))
     parser.add_argument('--data_path', default="ViT-B/32")
+    parser.add_argument('--data_loader_path', default="ViT-B/32")
     parser.add_argument('--output_dir', default="ViT-B/32")
     parser.add_argument('--use_cuda', dest='use_cuda', action='store_true')
     args = parser.parse_args()
