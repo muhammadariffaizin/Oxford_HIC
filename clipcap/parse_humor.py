@@ -15,6 +15,7 @@ def main(args):
     data_path = args.data_path
     data_loader_path = args.data_loader_path
     output_dir = args.output_dir
+    skip_rows = args.skip_rows
 
     if args.use_cuda:
         device = torch.device('cuda')
@@ -28,7 +29,7 @@ def main(args):
     print("%0d captions loaded from csv " % len(data))
     all_embeddings = []
     all_captions = []
-    for i in tqdm(range(len(data))):
+    for i in tqdm(range(skip_rows, len(data))):
         img_id = data.loc[i, "image_id"]
         filename = f"{data_path}/{img_id}.jpg"
         try:
@@ -64,6 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', default="ViT-B/32")
     parser.add_argument('--data_loader_path', default="ViT-B/32")
     parser.add_argument('--output_dir', default="ViT-B/32")
+    parser.add_argument('--skip_rows', type=int, default=0)
     parser.add_argument('--use_cuda', dest='use_cuda', action='store_true')
     args = parser.parse_args()
     exit(main(args))
