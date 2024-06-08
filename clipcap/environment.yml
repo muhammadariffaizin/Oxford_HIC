@@ -154,7 +154,7 @@ dependencies:
       - matplotlib==3.7.1
       - matplotlib-inline==0.1.6
       - networkx==3.1
-      - openai-clip==1.0
+      - openai-clip==1.0.1
       - opencv-python==4.7.0.72
       - packaging==22.0
       - pandas==1.5.2
