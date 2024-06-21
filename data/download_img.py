@@ -11,8 +11,18 @@ def download_images(batch, save_path, num_workers=8):
     for row in batch:
         image_id = row['image_id']
         image_url = row['image_url']
+        if image_id.endswith('.jpg'):
+            image_id = image_id[:-4]
+
+        # Skip if the image is already downloaded
+        if os.path.exists(os.path.join(save_path, f'{image_id}.jpg')):
+            continue
+
         urls.append(image_url)
         image_ids.append(image_id)
+
+    if len(urls) == 0:
+        return
 
     # using map
     rs = (grequests.get(url) for url in urls)
